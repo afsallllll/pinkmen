@@ -3,12 +3,12 @@ from flask import Flask
 import threading
 import os
 
-# ---------------- Flask (keep Render alive) ----------------
+# ---------------- Flask server (keeps Render awake) ----------------
 flask_app = Flask(__name__)
 
 @flask_app.route("/")
 def home():
-    return "Auto Delete Bot is running"
+    return "Auto Delete Bot is running ✅"
 
 def run_flask():
     flask_app.run(
@@ -50,12 +50,14 @@ async def auto_delete_previous(client, message):
     if chat_id in last_message:
         try:
             await client.delete_messages(chat_id, last_message[chat_id])
-        except Exception as e:
-            print(f"Delete failed in {chat_id}: {e}")
+        except:
+            pass
 
     last_message[chat_id] = message.id
 
 # ---------------- Run Flask + Bot together ----------------
 if __name__ == "__main__":
+    # Run Flask in a separate thread
     threading.Thread(target=run_flask).start()
+    # Run the Telegram bot
     bot.run()
