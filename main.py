@@ -1,0 +1,61 @@
+from pyrogram import Client, filters
+from flask import Flask
+import threading
+import os
+
+# ---------------- Flask (keep Render alive) ----------------
+flask_app = Flask(__name__)
+
+@flask_app.route("/")
+def home():
+    return "Auto Delete Bot is running"
+
+def run_flask():
+    flask_app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 10000))
+    )
+
+# ---------------- Telegram Bot Credentials ----------------
+api_id = 38492065
+api_hash = "263c5b1b96c976d556badba9ec3db482"
+bot_token = "8396480712:AAGvf2mZA3r9pUdwbVIrUBMetVW68dztJXk"
+
+# ---------------- Your 8 Channels ----------------
+TARGET_CHATS = [
+    -1003157773225,
+    -1003477857630,
+    -1002583103466,
+    -1002738151866,
+    -1002892550508,
+    -1002458549043,
+    -1002306956966,
+    -1003574367351
+]
+
+# ---------------- Store last message per chat ----------------
+last_message = {}
+
+bot = Client(
+    "auto_delete_bot",
+    api_id=api_id,
+    api_hash=api_hash,
+    bot_token=bot_token
+)
+
+@bot.on_message(filters.chat(TARGET_CHATS))
+async def auto_delete_previous(client, message):
+    chat_id = message.chat.id
+
+    if chat_id in last_message:
+        try:
+            await client.delete_messages(chat_id, last_message[chat_id])
+        except Exception as e:
+            print(f"Delete failed in {chat_id}: {e}")
+
+    last_message[chat_id] = message.id
+
+# ---------------- Run Flask + Bot together ----------------
+if __name__ == "__main__":
+    threading.Thread(target=run_flask).start()
+    bot.run()
