@@ -17,9 +17,9 @@ def run_flask():
     )
 
 # ---------------- Telegram Bot Credentials ----------------
-api_id = 38492065
-api_hash = "263c5b1b96c976d556badba9ec3db482"
-bot_token = "8396480712:AAGvf2mZA3r9pUdwbVIrUBMetVW68dztJXk"
+api_id = 29842444
+api_hash = "0c2c4ac4fa5ddf626edaaf302abce6df"
+bot_token = "8273089291:AAFEVx58Ivcu5usr7Wozgw3VvDXt8ILp4QA"
 
 # ---------------- Your 8 Channels ----------------
 TARGET_CHATS = [
