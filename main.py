@@ -3,40 +3,30 @@ from flask import Flask
 import threading
 import os
 
-# ---------------- Flask server (keeps Render awake) ----------------
-flask_app = Flask(__name__)
+# ===== TELEGRAM CREDENTIALS =====
+api_id = 36786764
+api_hash = "8b4eac106e76e0e94b92a7da8eb9a491"
+bot_token = "8967301761:AAFFdQaKsbSb_V_Z3NSHO2gLYPI4bhFuGBJA"
 
-@flask_app.route("/")
-def home():
-    return "Auto Delete Bot is running ✅"
-
-def run_flask():
-    flask_app.run(
-        host="0.0.0.0",
-        port=int(os.environ.get("PORT", 10000))
-    )
-
-# ---------------- Telegram Bot Credentials ----------------
-api_id = 29842444
-api_hash = "0c2c4ac4fa5ddf626edaaf302abce6df"
-bot_token = "8273089291:AAFEVx58Ivcu5usr7Wozgw3VvDXt8ILp4QA"
-
-# ---------------- Your 8 Channels ----------------
 TARGET_CHATS = [
-    -1003157773225,
-    -1003813087595,
+    -1003959234986,
+    -1003823745210,
     -1003681289888,
-    -1002457215123,
-    -1003477857630,
-    -1002583103466,
-    -1002738151866,
-    -1002892550508,
-    -1002458549043,
+    -1003975750767,
     -1002306956966,
-    -1003574367351
+    -1004307504599,
+    -1003157773225,
+    -1003523693073,
+    -1004470037524,
+    -1003975928544,
+    -1002458549043,
+    -1002457215123,
+    -1004345853199,
+    -1004379369225,
+    -1004307278991,
+    -1004490657670
 ]
 
-# ---------------- Store last message per chat ----------------
 last_message = {}
 
 bot = Client(
@@ -47,7 +37,7 @@ bot = Client(
 )
 
 @bot.on_message(filters.chat(TARGET_CHATS))
-async def auto_delete_previous(client, message):
+async def auto_delete(client, message):
     chat_id = message.chat.id
 
     if chat_id in last_message:
@@ -58,9 +48,24 @@ async def auto_delete_previous(client, message):
 
     last_message[chat_id] = message.id
 
-# ---------------- Run Flask + Bot together ----------------
-if __name__ == "__main__":
-    # Run Flask in a separate thread
-    threading.Thread(target=run_flask).start()
-    # Run the Telegram bot
+
+# ===== FLASK SERVER (FOR RENDER) =====
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Bot is running ✅"
+
+def run_web():
+    app.run(
+        host="0.0.0.0",
+        port=int(os.environ.get("PORT", 10000))
+    )
+
+def run_bot():
     bot.run()
+
+
+if __name__ == "__main__":
+    threading.Thread(target=run_web).start()
+    run_bot()
